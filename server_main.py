@@ -1,7 +1,7 @@
 import argparse 
-from multiprocessing import Process
-from _thread import start_new_thread
 import socket 
+from _thread import start_new_thread
+from multiprocessing import Process
 from datetime import datetime
 
 HOST = '0.0.0.0'
@@ -11,14 +11,14 @@ def print_log(logs):
     now = datetime.now().isoformat()
     print(f'[{now}] {logs}')
 
-def server_log(data, client_ip, client_port): 
+def server_log(data, client_ip, client_port, protocol): 
     '''print server's log'''
     try:
         if not data:
             print_log(f'Disconnected [{client_ip}:{client_port}]')
             return
         data = data.decode()
-        print_log(f'Received [{client_ip}:{client_port}] {data}')
+        print_log(f'Received [{client_ip}:{client_port}/{protocol}] {data}')
     except ConnectionResetError as e:
         print_log(e)
         print_log(f'Disconnected [{client_ip}:{client_port}]')
@@ -30,8 +30,7 @@ def tcp_server(port):
     sock.bind((HOST, port)) 
     sock.listen(5)
     buffer_size = 1024
-    print_log(f'TCP Server start Now! [{HOST}:{port}], \
-    Buffer size : {buffer_size}')
+    print_log(f'TCP Server start Now! [{HOST}:{port}], Buffer size : {buffer_size}')
 
     conn, client = sock.accept()
     client_ip, client_port = client[0], client[1]
@@ -41,7 +40,7 @@ def tcp_server(port):
         data = conn.recv(buffer_size)
         if len(data) == 0:
             break
-        start_new_thread(server_log, (data, client_ip, client_port))
+        start_new_thread(server_log, (data, client_ip, client_port, 'tcp'))
         conn.send(data)
     print_log(f'TCP Server Disconnected by {client_ip}:{client_port}')
     conn.close()
@@ -49,22 +48,17 @@ def tcp_server(port):
     tcp_server(port) # client 에서 close 되더라도 서버 재실행
 
 def udp_server(port):
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
-    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_socket.bind((HOST, port)) 
-    Buffer_size = 1024
-    print_log(f'UDP Server start Now! [{HOST}:{port}], \
-    Buffer size : {Buffer_size}')
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server_socket.bind((HOST, port))
 
-    first_loop = True
+    buffer_size = 1024
+    print_log(f'UDP Server start Now! [{HOST}:{port}], Buffer size : {buffer_size}')
+
     while True:
-        data, client = server_socket.recvfrom(Buffer_size) 
-        server_socket.sendto(data, client)
+        data, client = server_socket.recvfrom(buffer_size) 
         client_ip, client_port = client[0], client[1]
-        if first_loop:
-            print_log(f'Connected [{client_ip}:{client_port}]')
-            first_loop = False
-        start_new_thread(server_log, (data, client_ip, client_port))
+        server_log(data, client_ip, client_port, 'udp')
+        server_socket.sendto(data, client)
 
 if __name__ == "__main__":
     try:

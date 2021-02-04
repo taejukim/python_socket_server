@@ -1,0 +1,21 @@
+version: '3'
+services:
+    udp:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes: 
+            - .:/python_socket_server
+        image: python39
+        container_name: udp_server
+        ports:
+            - "10001:10001/udp"
+        command: python udp_server.py &
+        restart: on-failure          
+    tcp:
+        image: python39
+        container_name: tcp_server
+        ports:
+            - "10002:10002/tcp"
+        command: python tcp_server.py &
+        restart: on-failure
