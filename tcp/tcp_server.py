@@ -1,7 +1,6 @@
 import socket 
 from _thread import start_new_thread
 from datetime import datetime
-import time
 
 HOST = '0.0.0.0'
 PORT = 10002
@@ -39,7 +38,6 @@ def tcp_server(port):
         data = conn.recv(buffer_size)
         if len(data) == 0:
             break
-        time.sleep(0.5)
         if not data or data == 'PING'.encode():
             send_data = 'PONG'.encode()
         else:

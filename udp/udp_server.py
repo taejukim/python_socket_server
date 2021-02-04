@@ -1,6 +1,5 @@
 import socket 
 from datetime import datetime
-import time
 
 HOST = '0.0.0.0'
 PORT = 10001
@@ -33,7 +32,6 @@ def udp_server(port):
     data, client = server_socket.recvfrom(buffer_size) 
     client_ip, client_port = client[0], client[1]
     server_log(data, client_ip, client_port, 'udp')
-    time.sleep(0.5)
     if not data or data == 'PING'.encode():
         send_data = 'PONG'.encode()
     else:
