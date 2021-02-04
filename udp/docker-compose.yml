@@ -6,16 +6,10 @@ services:
             dockerfile: Dockerfile
         volumes: 
             - .:/python_socket_server
-        image: python39
+        image: python_udp
         container_name: udp_server
         ports:
             - "10001:10001/udp"
+            #  Host:Container/protocol
         command: python udp_server.py &
-        restart: on-failure          
-    tcp:
-        image: python39
-        container_name: tcp_server
-        ports:
-            - "10002:10002/tcp"
-        command: python tcp_server.py &
-        restart: on-failure
+        restart: on-failure   

@@ -1,0 +1,15 @@
+version: '3'
+services:
+    tcp:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes: 
+            - .:/python_socket_server
+        image: python_tcp
+        container_name: tcp_server
+        ports:
+            - "10002:10002/tcp"
+            #  Host:Container/protocol
+        command: python tcp_server.py
+        restart: on-failure          

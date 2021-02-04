@@ -29,16 +29,16 @@ def udp_server(port):
     buffer_size = 1024
     print_log(f'UDP Server start Now! [{HOST}:{port}], Buffer size : {buffer_size}')
 
-    while True:
-        data, client = server_socket.recvfrom(buffer_size) 
-        client_ip, client_port = client[0], client[1]
-        server_log(data, client_ip, client_port, 'udp')
-        time.sleep(0.5)
-        if not data or data == 'PING'.encode():
-            send_data = 'PONG'.encode()
-        else:
-            send_data = data
-        server_socket.sendto(send_data, client)
+    # while True:
+    data, client = server_socket.recvfrom(buffer_size) 
+    client_ip, client_port = client[0], client[1]
+    server_log(data, client_ip, client_port, 'udp')
+    time.sleep(0.5)
+    if not data or data == 'PING'.encode():
+        send_data = 'PONG'.encode()
+    else:
+        send_data = data
+    server_socket.sendto(send_data, client)
 
 if __name__ == "__main__":
     udp_server(PORT)
